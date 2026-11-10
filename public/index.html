@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1">
+<meta name="theme-color" content="#03070D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>SUBLIMA · control</title>
+<link rel="stylesheet" href="ui.css">
+<style>
+  * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+  html, body {
+    font-size: 16px;
+    overscroll-behavior: none;
+    user-select: none;
+    -webkit-user-select: none;
+    min-height: 100dvh;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: max(var(--sp-3), env(safe-area-inset-top))
+             max(var(--sp-3), env(safe-area-inset-right))
+             max(var(--sp-3), env(safe-area-inset-bottom))
+             max(var(--sp-3), env(safe-area-inset-left));
+    background: radial-gradient(ellipse at 50% 0%, #071a2e 0%, var(--bg) 70%);
+  }
+
+  /* ——— PORTADA ——— */
+  #join {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    margin: auto 0;
+    max-width: 460px;
+    width: 100%;
+    align-self: center;
+  }
+  #join .tagline {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--mut);
+    text-transform: uppercase;
+    margin-top: -6px;
+  }
+  #join .field { display: flex; flex-direction: column; gap: 6px; }
+  #join label { font-size: 12px; letter-spacing: 0.1em; color: var(--mut); text-transform: uppercase; }
+  #join input {
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px;
+    border-radius: var(--r-m);
+  }
+  #go {
+    min-height: 52px;
+    font-size: 15px;
+    margin-top: var(--sp-2);
+    border-radius: var(--r-m);
+  }
+  .note { color: var(--mut); font-size: 12px; line-height: 1.6; }
+
+  /* ——— INTERFAZ ACTIVA ——— */
+  #run { display: none; flex: 1; min-height: 0; flex-direction: column; gap: var(--sp-2); }
+  #bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--mut);
+    gap: var(--sp-2);
+  }
+  #st { font-weight: 700; letter-spacing: 0.15em; }
+  #st.on   { color: var(--cyan); text-shadow: 0 0 10px rgba(100,255,218,0.5); }
+  #st.warn { color: var(--warn); }
+
+  /* ——— SUPERFICIE TÁCTIL ——— */
+  #surface {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    border-radius: var(--r-l);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    touch-action: none;
+    background:
+      radial-gradient(ellipse at 50% 50%, #0d1f30 0%, #03070D 80%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(100,255,218,0.03) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(100,255,218,0.03) 40px);
+    transition: border-color .2s;
+  }
+  #surface.touching { border-color: var(--cyan-dim); }
+  #cv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  #hud {
+    position: absolute;
+    left: 12px; top: 10px; right: 12px;
+    font: 11px/1.6 var(--mono);
+    color: rgba(100,255,218,0.6);
+    pointer-events: none;
+    white-space: pre;
+    text-shadow: 0 0 8px rgba(100,255,218,0.3);
+  }
+  #hint {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--mut);
+    pointer-events: none;
+    text-align: center;
+    padding: 0 32px;
+    font-size: 13px;
+    line-height: 1.8;
+    letter-spacing: 0.08em;
+  }
+  #hint strong { color: var(--cyan-dim); display: block; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+
+  /* ——— DATOS EN VIVO ——— */
+  #data-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-2);
+  }
+  .data-cell {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-m);
+    padding: 10px;
+    text-align: center;
+  }
+  .data-cell .label { font-size: 9px; letter-spacing: 0.15em; color: var(--mut); text-transform: uppercase; display: block; margin-bottom: 4px; }
+  .data-cell .val   { font-size: 20px; color: var(--cyan); font-weight: 700; display: block; }
+  .data-cell .bar   { height: 2px; background: var(--line); border-radius: 1px; margin-top: 6px; overflow: hidden; }
+  .data-cell .fill  { height: 100%; background: var(--cyan); border-radius: 1px; width: 0%; transition: width .1s; }
+
+  .msg { font-size: 12px; color: var(--warn); min-height: 16px; letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+
+  <!-- ══════ PANTALLA DE ENTRADA ══════ -->
+  <div id="join" class="card">
+    <h1>SUBLIMA</h1>
+    <p class="tagline">La paradoja sensorial del hielo seco</p>
+
+    <div class="field">
+      <label for="name">Tu nombre</label>
+      <input id="name" autocomplete="off" autocapitalize="off" maxlength="24" placeholder="ej: ana">
+    </div>
+    <div class="field">
+      <label for="sala">Sala (la muestra la experiencia)</label>
+      <input id="sala" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" placeholder="ej: k7m2xq">
+    </div>
+
+    <button id="go" class="primary">— CONECTAR —</button>
+    <div class="msg" id="err" role="alert"></div>
+    <p class="note">
+      Mantén la pantalla encendida. En iPhone, "Añadir a pantalla de inicio" elimina los gestos de borde de Safari.
+    </p>
+  </div>
+
+  <!-- ══════ INTERFAZ ACTIVA ══════ -->
+  <div id="run">
+    <div id="bar">
+      <span id="st" role="status" aria-live="polite">Conectando…</span>
+      <span id="info"></span>
+    </div>
+
+    <!-- superficie táctil -->
+    <div id="surface">
+      <canvas id="cv" aria-hidden="true"></canvas>
+      <div id="hud" aria-hidden="true"></div>
+      <div id="hint">
+        <div>
+          <strong>instrucciones</strong>
+          Toca con un dedo para emitir vapor<br>
+          Presiona más fuerte para generar grietas<br>
+          Junta dos dedos para atrapar el gas
+        </div>
+      </div>
+    </div>
+
+    <!-- métricas en vivo -->
+    <div id="data-row">
+      <div class="data-cell">
+        <span class="label">Dedos</span>
+        <span class="val" id="v-n">0</span>
+        <div class="bar"><div class="fill" id="b-n"></div></div>
+      </div>
+      <div class="data-cell">
+        <span class="label">Presión</span>
+        <span class="val" id="v-f">0.00</span>
+        <div class="bar"><div class="fill" id="b-f"></div></div>
+      </div>
+      <div class="data-cell">
+        <span class="label">Distancia</span>
+        <span class="val" id="v-d">—</span>
+        <div class="bar"><div class="fill" id="b-d"></div></div>
+      </div>
+    </div>
+
+    <div class="msg" id="err2" role="alert"></div>
+  </div>
+
+<script src="config.js"></script>
+<script src="tacto.js"></script>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch {} return null; };
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const r2 = v => Math.round(v * 100) / 100;
+const r3 = v => Math.round(v * 1000) / 1000;
+
+const Q = new URLSearchParams(location.search);
+$('#name').value = ls('tacto.name') || '';
+$('#sala').value = Tacto.clean(Q.get('sala')) || Tacto.clean(ls('tacto.sala')) || '';
+
+let client = null, base = '', name = '', sala = '';
+const dev = ls('tacto.dev') || (ls('tacto.dev', Tacto.rand(6)), ls('tacto.dev'));
+const pub = (kind, obj, qos = 0, retain = false) =>
+  client && client.connected && client.publish(`${base}/${kind}`, JSON.stringify(obj), { qos, retain });
+
+// ---------- capacidades ----------
+const S = { f: { min: 9, max: -1, n: 0 }, d: { min: 1e9, max: -1, n: 0 } };
+const quality = (s, eps) => (!s.n ? 'sin datos aún' : s.max <= 0 ? 'sin dato' : s.n > 20 && s.max - s.min < eps ? 'constante' : 'variable');
+const caps = () => ({ presion: quality(S.f, 0.02), diametro: quality(S.d, 1), tacto: 'ontouchstart' in window ? 'touch' : 'puntero' });
+let lastCaps = '';
+function publishStatus() {
+  pub('status', { online: true, name, caps: { ...caps() } }, 1, true);
+}
+
+// ---------- MQTT ----------
+async function connect() {
+  base = `tacto/${sala}/${dev}`;
+  const will = { topic: `${base}/status`, payload: JSON.stringify({ online: false, name }), qos: 1, retain: true };
+  const o = await Tacto.open({ clientId: 'tel-' + dev, will });
+  client = o.client;
+  const where = /^wss?:\/\/(localhost|\d+\.\d+\.\d+\.\d+)/.test(o.broker) ? 'broker local' : 'broker público';
+  $('#info').textContent = `sala ${sala} · ${where}`;
+  client.on('connect', () => {
+    $('#st').textContent = '● CONECTADO'; $('#st').className = 'on';
+    client.subscribe(`${base}/cmd`); publishStatus();
+  });
+  client.on('reconnect', () => { $('#st').textContent = 'RECONECTANDO…'; $('#st').className = 'warn'; });
+  client.on('offline',   () => { $('#st').textContent = 'SIN CONEXIÓN';  $('#st').className = 'warn'; });
+  client.on('error',     e  => { $('#err2').textContent = 'MQTT: ' + (e.message || e); });
+  client.on('message',   (t, p) => {
+    try { const m = JSON.parse(p.toString()); if (m.ping != null) pub('pong', { t: m.ping }); } catch {}
+  });
+}
+
+// ---------- TACTO ----------
+const surf = $('#surface'), cv = $('#cv'), ctx = cv.getContext('2d');
+let cur = { n: 0, p: [], ar: 1 }, lastN = 0, queued = false;
+
+function fit() {
+  const dpr = devicePixelRatio || 1, r = surf.getBoundingClientRect();
+  cv.width = r.width * dpr; cv.height = r.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+addEventListener('resize', fit);
+
+function setTouches(p, r) {
+  cur = { n: p.length, p, ar: r3(r.width / r.height) };
+  for (const z of p) {
+    S.f.n++; S.f.min = Math.min(S.f.min, z.f); S.f.max = Math.max(S.f.max, z.f);
+    S.d.n++; S.d.min = Math.min(S.d.min, z.d); S.d.max = Math.max(S.d.max, z.d);
+  }
+  if (p.length) {
+    $('#hint').style.display = 'none';
+    surf.classList.add('touching');
+  } else {
+    surf.classList.remove('touching');
+  }
+  if (cur.n !== lastN) { lastN = cur.n; sendTouch(1); }
+  else if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; sendTouch(0); }); }
+  updateMetrics();
+}
+
+const sendTouch = qos => pub('touch', {
+  t: Date.now(), n: cur.n, ar: cur.ar,
+  p: cur.p.map(z => ({ i: z.i, x: r3(z.x), y: r3(z.y), f: r3(z.f), d: Math.round(z.d) }))
+}, qos);
+
+function updateMetrics() {
+  const n = cur.p.length;
+  const f = n ? Math.max(...cur.p.map(z => z.f)) : 0;
+  let dist = null;
+  if (n >= 2) {
+    const dx = (cur.p[1].x - cur.p[0].x) * cur.ar, dy = cur.p[1].y - cur.p[0].y;
+    dist = Math.hypot(dx, dy);
+  }
+  $('#v-n').textContent = n;
+  $('#b-n').style.width = (n / 5 * 100) + '%';
+  $('#v-f').textContent = f.toFixed(2);
+  $('#b-f').style.width = (f * 100) + '%';
+  if (dist !== null) {
+    $('#v-d').textContent = dist.toFixed(2);
+    $('#b-d').style.width = Math.min(100, dist / 1.5 * 100) + '%';
+  } else {
+    $('#v-d').textContent = '—';
+    $('#b-d').style.width = '0%';
+  }
+}
+
+// Touch Events (iOS / Android)
+const slots = new Map();
+function slotFor(id) {
+  if (slots.has(id)) return slots.get(id);
+  const used = new Set(slots.values());
+  for (let s = 1; s <= 5; s++) if (!used.has(s)) { slots.set(id, s); return s; }
+  return null;
+}
+function onTouch(e) {
+  e.preventDefault();
+  const r = surf.getBoundingClientRect(), list = Array.from(e.targetTouches), ids = new Set(list.map(t => t.identifier));
+  for (const id of [...slots.keys()]) if (!ids.has(id)) slots.delete(id);
+  const p = [];
+  for (const t of list) {
+    const i = slotFor(t.identifier); if (!i) continue;
+    const rx = t.radiusX ?? t.webkitRadiusX ?? 0, ry = t.radiusY ?? t.webkitRadiusY ?? 0;
+    p.push({ i, x: clamp((t.clientX - r.left) / r.width), y: clamp((t.clientY - r.top) / r.height), f: t.force ?? t.webkitForce ?? 0, d: rx + ry });
+  }
+  setTouches(p.sort((a, b) => a.i - b.i), r);
+}
+['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(n => surf.addEventListener(n, onTouch, { passive: false }));
+['gesturestart', 'gesturechange'].forEach(n => document.addEventListener(n, e => e.preventDefault()));
+surf.addEventListener('contextmenu', e => e.preventDefault());
+
+// Puntero (prueba desde computador)
+const ptrs = new Map();
+function fromPtrs() {
+  const r = surf.getBoundingClientRect(); const p = []; let i = 0;
+  for (const e of ptrs.values()) {
+    if (++i > 5) break;
+    p.push({ i, x: clamp((e.clientX - r.left) / r.width), y: clamp((e.clientY - r.top) / r.height), f: e.pressure || 0, d: Math.max(e.width || 0, e.height || 0) });
+  }
+  setTouches(p, r);
+}
+surf.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') return; surf.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, e); fromPtrs(); });
+surf.addEventListener('pointermove', e => { if (ptrs.has(e.pointerId)) { ptrs.set(e.pointerId, e); fromPtrs(); } });
+const pend = e => { if (ptrs.delete(e.pointerId)) fromPtrs(); };
+surf.addEventListener('pointerup', pend); surf.addEventListener('pointercancel', pend);
+
+// Dibujo visual del toque en la superficie
+function draw() {
+  const r = surf.getBoundingClientRect();
+  ctx.clearRect(0, 0, r.width, r.height);
+  const now = performance.now();
+
+  for (const z of cur.p) {
+    const x = z.x * r.width, y = z.y * r.height;
+    const rad = Math.max(24, (z.d || 24));
+
+    // halo exterior pulsante
+    const pulse = 0.5 + 0.5 * Math.sin(now * 0.006);
+    const g1 = ctx.createRadialGradient(x, y, 0, x, y, rad * 2);
+    g1.addColorStop(0, `rgba(100,255,218,${0.08 + z.f * 0.12})`);
+    g1.addColorStop(1, 'rgba(100,255,218,0)');
+    ctx.fillStyle = g1;
+    ctx.beginPath(); ctx.arc(x, y, rad * 2, 0, Math.PI * 2); ctx.fill();
+
+    // círculo principal
+    ctx.strokeStyle = `rgba(100,255,218,${0.5 + z.f * 0.5})`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.stroke();
+
+    // cruz
+    const ext = rad + 8;
+    ctx.strokeStyle = `rgba(100,255,218,${0.3 + z.f * 0.4})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x - ext, y); ctx.lineTo(x + ext, y);
+    ctx.moveTo(x, y - ext); ctx.lineTo(x, y + ext);
+    ctx.stroke();
+
+    // número de dedo
+    ctx.fillStyle = 'rgba(100,255,218,0.8)';
+    ctx.font = '11px ' + getComputedStyle(document.documentElement).getPropertyValue('--mono');
+    ctx.textAlign = 'center';
+    ctx.fillText(`t${z.i}`, x, y - rad - 10);
+  }
+
+  // línea de distancia entre dos dedos
+  if (cur.p.length >= 2) {
+    const a = cur.p[0], b = cur.p[1];
+    const ax = a.x * r.width, ay = a.y * r.height;
+    const bx = b.x * r.width, by = b.y * r.height;
+    ctx.strokeStyle = 'rgba(123,44,191,0.6)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // HUD
+  const lines = [`DEDOS ${cur.n}`];
+  for (const z of cur.p) lines.push(`t${z.i}  x:${z.x.toFixed(2)}  y:${z.y.toFixed(2)}  f:${z.f.toFixed(2)}  ⌀:${Math.round(z.d)}px`);
+  const c = caps();
+  lines.push(`presión: ${c.presion} · diámetro: ${c.diametro}`);
+  $('#hud').textContent = lines.join('\n');
+
+  requestAnimationFrame(draw);
+}
+
+setInterval(() => {
+  const k = JSON.stringify(caps()); if (k !== lastCaps) { lastCaps = k; publishStatus(); }
+}, 700);
+
+// ---------- ENTRAR ----------
+async function wake() { try { await navigator.wakeLock?.request('screen'); } catch {} }
+
+$('#go').onclick = async () => {
+  name = $('#name').value.trim() || 'sublima';
+  sala = Tacto.clean($('#sala').value);
+  if (sala.length < 4) {
+    $('#err').textContent = 'Escribe la sala que muestra la experiencia (mínimo 4 caracteres).';
+    return;
+  }
+  ls('tacto.name', name); ls('tacto.sala', sala);
+  $('#join').style.display = 'none';
+  $('#run').style.display = 'flex';
+  fit(); draw(); wake();
+  document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && wake());
+  connect().catch(e => { $('#st').textContent = 'NO SE PUDO CONECTAR'; $('#err2').textContent = e.message || String(e); });
+};
+</script>
+</body>
+</html>

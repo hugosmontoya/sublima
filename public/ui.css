@@ -1,0 +1,85 @@
+/* SUBLIMA · ui.css — estética criogénica e industrial */
+:root {
+  --bg:       #03070D;
+  --bg-2:     #070e18;
+  --card:     #0a1520;
+  --line:     #1a2d40;
+  --line-2:   #243d55;
+  --fg:       #e8f4ff;
+  --mut:      #4a7a9b;
+  --cyan:     #64FFDA;
+  --cyan-dim: #2a8a6e;
+  --vio:      #7B2CBF;
+  --vio-dim:  #4a1a7a;
+  --white-ice:#c8f0ff;
+  --ok:       #64FFDA;
+  --warn:     #ff6b35;
+  --mono:     'Courier New', 'Lucida Console', monospace;
+  --sp-1: 6px; --sp-2: 12px; --sp-3: 18px; --sp-4: 24px;
+  --r-s: 4px; --r-m: 8px; --r-l: 14px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border: none; outline: none; }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1 {
+  font-size: 22px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  text-shadow: 0 0 20px rgba(100,255,218,0.4);
+}
+h1 span { color: var(--mut); font-weight: 400; font-size: 13px; letter-spacing: 0.1em; }
+
+button {
+  cursor: pointer;
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-m);
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+button:hover { border-color: var(--cyan-dim); background: #0d1e2e; }
+button.primary {
+  background: var(--vio);
+  border-color: var(--vio);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+button.primary:hover { background: #9b3def; box-shadow: 0 0 24px rgba(123,44,191,0.5); }
+
+input, select {
+  background: var(--bg-2);
+  color: var(--fg);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-s);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 8px 12px;
+  transition: border-color .15s;
+}
+input:focus, select:focus { border-color: var(--cyan-dim); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-l);
+  padding: var(--sp-3);
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 2px; }
