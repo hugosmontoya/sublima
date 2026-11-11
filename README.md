@@ -60,29 +60,10 @@ Toda la síntesis es **procedural** (generada en tiempo real con Web Audio API).
 
 ---
 
-## 3. Archivos del proyecto
-
-```
-sublima/
-├── server.js              Servidor Node.js (Express + broker MQTT Aedes)
-├── package.json           Dependencias
-└── public/
-    ├── index.html         Página del teléfono (control remoto táctil)
-    ├── exp.html           Estructura de la experiencia (computador)
-    ├── exp.js             Lógica principal: orquesta MQTT, visual y audio
-    ├── audio.js           Síntesis Web Audio API (siseo, FM, retumbo)
-    ├── particulas.js      Sistema de partículas CO₂
-    ├── grietas.js         Grietas vectoriales heladas
-    ├── tacto.js           Librería MQTT compartida (de Tacto)
-    ├── ui.css             Estilos criogénicos (fondo #03070D, cian, violeta)
-    ├── config.js          Configuración de broker
-    └── vendor/
-        └── mqtt.min.js    Cliente MQTT local
-```
 
 ---
 
-## 4. Reflexión
+## 3. Reflexión
 
 ### ¿Qué descubrí al traducir el tacto?
 
@@ -101,33 +82,3 @@ Lo más difícil fue el sonido: el chirrido real del hielo seco es difícil de s
 
 ---
 
-## 5. Puesta en marcha
-
-```bash
-# En el computador (Node.js 18+)
-cd sublima
-npm install
-node server.js
-```
-
-```
-Teléfono y computador deben estar en la misma red.
-Se recomienda el hotspot del teléfono.
-En iPhone, acepta el certificado en Mostrar detalles → visitar este sitio.
-```
-
----
-
-## 6. Estética
-
-| Elemento | Valor |
-|---|---|
-| Fondo | `#03070D` |
-| Cian (vapor) | `#64FFDA` |
-| Violeta (apresamiento) | `#7B2CBF` |
-| Blanco hielo | `#C8F0FF` |
-| Tipografía | `Courier New`, monoespaciada |
-
----
-
-*Proyecto desarrollado sobre la base de [Tacto](https://github.com/fefeliperoar/tacto) — DPPI 2026.*
