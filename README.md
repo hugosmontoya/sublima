@@ -8,15 +8,10 @@
 
 ## 1. Concepto
 
-Tocar hielo seco es contradictorio: **quema sin quemar**, **resbala sin deslizar**, **cruje sin romperse**. El CO₂ sublima directamente de sólido a gas sin pasar por líquido, creando una capa de vapor que flota entre el dedo y la superficie. El cuerpo no sabe qué sentir: el nervio del dolor y el del frío se activan a la vez.
+Hay algunas cosas que se pueden tocar pero no se deberían tocar, el hielo seco es una de esas cosas que puede ser peligroso tocarlo con tus propias manos sin ninguna protección, este sistema te permite *oír y sentir* a través de dos pantallas como sería interactuar con este sólido tan dañino para cualquier cosa que lo toque.
+Te permite interactuar con este sólido de diferentes maneras y como reacciona tanto con sonido como por el tacto a diferentes acciones.
+El objetivo de este proyecto es permitir al usuario desde cierto punto como sería interactuar con este objeto a través del tacto y del oido sin sufrir las consecuencias que podrían suceder si se interactuara con este sólido en la vida real.
 
-SUBLIMA propone explorar esa paradoja a través de tres preguntas:
-
-- **¿Qué es el vapor?** Cuando tocas, el gas emerge y sube — sistema de partículas criogénicas.
-- **¿Qué es la quemadura?** Un halo incandescente blanco/cian/violeta que se expande con la presión.
-- **¿Qué es el chirrido?** El sonido que hace el hielo seco al ser aprisionado — síntesis FM inestable.
-
-La plataforma no simula el frío: **traduce la experiencia sensorial en otra experiencia sensorial**.
 
 ---
 
@@ -91,15 +86,13 @@ sublima/
 
 ### ¿Qué descubrí al traducir el tacto?
 
-La paradoja del hielo seco **no cabe en un canal**. La presión sola no es suficiente: el chirrido ocurre cuando el gas no puede escapar — por eso el gesto de apresamiento (pinch) resultó más fiel que el giroscopio, que habría sido arbitrario.
-
+La paradoja del hielo seco **no cabe en un canal**. La presión sola no es suficiente: este objeto si se tocase con tus propias manos ni te congela ni te quema. Aunque parece hielo que está frío no te quema ni te congela ni te moja al tocarlo.
 Lo más difícil fue el sonido: el chirrido real del hielo seco es difícil de sintetizar porque es **inestable por naturaleza** — oscila entre frecuencias que no se pueden predecir. La síntesis FM con índice variable se acerca, pero le falta la granularidad del sonido real.
 
 ### ¿Qué queda fuera?
 
 - **El frío en sí**: la temperatura no tiene análogo directo en imagen o sonido. El color azul-blanco lo evoca pero no lo comunica.
 - **La sublimación visual del sólido**: las grietas en el lienzo sugieren fractura, no disolución.
-- **El tiempo**: el hielo seco desaparece. Esta versión no tiene memoria — cada toque es nuevo.
 
 ### Mejoras concretas
 
