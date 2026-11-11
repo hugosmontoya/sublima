@@ -78,7 +78,6 @@ Lo más difícil fue el sonido: el chirrido real del hielo seco es difícil de s
 ### Mejoras concretas
 
 1. **Grabación y reproducción de sesión**: grabar los mensajes MQTT y reproducirlos permitiría mostrar la experiencia sin teléfono y construir memoria del contacto.
-2. **Síntesis granular para el chirrido**: reemplazar la FM por granular synthesis con granos de 10–50 ms sobre ruido filtrado lograría una textura más cercana al sonido real del hielo seco.
-
+2. **Mejor efectos visuales al interactuar con el hielo seco**: Que se vea claramente como por ejemplo se fractura el hielo seco o que hayan efectos de vapor al tocar el hielo seco.
 ---
 
