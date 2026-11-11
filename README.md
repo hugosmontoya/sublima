@@ -8,11 +8,9 @@
 
 ## 1. Concepto
 
-Tocar hielo seco encierra una triple contradicción física y táctil:
-1. **Quema sin quemar (Quemadura por congelación):** El frío extremo activa los mismos receptores nociceptivos del dolor térmico que una llama ardiente.
-2. **Resbala sin fricción (Efecto Leidenfrost criogénico):** Al entrar en contacto con el calor de la piel, el CO₂ sublima instantáneamente a gas, creando una película de vapor que hace levitar el dedo y anula la fricción mecánica.
-3. **Chirrido al aprisionarlo:** Al presionar o atrapar un trozo de hielo seco, el gas que intenta escapar vibra a frecuencias audibles agudas y disonantes, produciendo un quejido estridente característico.
-
+Hay algunas cosas que se pueden tocar pero no se deberían tocar, el hielo seco es una de esas cosas que puede ser peligroso tocarlo con tus propias manos sin ninguna protección, este sistema te permite *oír y sentir* a través de dos pantallas como sería interactuar con este sólido tan dañino para cualquier cosa que lo toque.
+Te permite interactuar con este sólido de diferentes maneras y como reacciona tanto con sonido como por el tacto a diferentes acciones.
+El objetivo de este proyecto es permitir al usuario desde cierto punto como sería interactuar con este objeto a través del tacto y del oido sin sufrir las consecuencias que podrían suceder si se interactuara con este sólido en la vida real.
 SUBLIMA explora esta relación trasladando cada gesto de la mano a una propiedad visual y sonora del bloque de hielo seco.
 
 ---
@@ -52,32 +50,11 @@ El escenario central muestra una imagen de alta resolución de un **bloque recta
 
 ---
 
-## 3. Arquitectura del Proyecto
 
-```
-sublima/
-├── .github/workflows/pages.yml   Workflow de publicación en GitHub Pages
-├── server.js                     Servidor Node.js (Express + broker MQTT Aedes embebido)
-├── package.json                  Dependencias del servidor local
-├── README.md                     Documentación académica y técnica
-└── public/
-    ├── index.html                Control remoto táctil para el teléfono
-    ├── exp.html                  Experiencia audiovisual del computador
-    ├── exp.js                    Orquestador del loop interactivo (sensores → lienzo → sonido)
-    ├── audio.js                  Motor sonoro procedural criogénico (8 capas de audio)
-    ├── particulas.js             Física de partículas de vapor CO₂ y ráfagas expansivas
-    ├── grietas.js                Generador fractal de fracturas heladas sobre el hielo
-    ├── tacto.js                  Librería de conexión MQTT y canales normalizados
-    ├── hielo_seco.png            Imagen de textura de alta resolución del bloque de hielo seco
-    ├── ui.css                    Sistema de diseño criogénico e industrial (#03070D, #64FFDA, #7B2CBF)
-    ├── config.js                 Configuración de broker MQTT en la nube (EMQX)
-    └── vendor/
-        └── mqtt.min.js           Cliente MQTT para funcionar de forma autónoma
-```
 
 ---
 
-## 4. Reflexión Crítica
+## 3. Reflexión
 
 ### ¿Qué descubrí al traducir el tacto en imagen y sonido?
 Al explorar la paradoja del hielo seco quedó en evidencia que **el tacto no es un sentido unidimensional de presión**: es una combinación de temperatura, fricción, resistencia elástica y escape de fluidos. 
@@ -91,23 +68,8 @@ Si solo hubiésemos usado la presión para modular el volumen, la experiencia se
 2. **La sublimación de volumen permanente:** El bloque real de hielo seco va perdiendo masa física hasta desaparecer en el aire. En nuestra versión actual, el bloque se regenera y los cráteres se desvanecen; no hay un desgaste geológico irreversible en el tiempo.
 
 ### Dos mejoras concretas
-1. **Malla WebGL de deformación topológica de masa:** Sustituir el lienzo 2D por una malla deformable con heightmap tridimensional donde el calor del dedo derrita y ahueque permanentemente el bloque tridimensional de hielo seco.
+1. **Mejor efectos visuales:** Que al tocar el hielo se puedan ver mejores efectos visuales como por ejemplo el vapor que genera el tacto o las grietas que se forman al tocar el hielo seco
 2. **Síntesis granular orientada a granos de hielo:** Implementar un motor de síntesis granular con ventanas de 5 a 20 ms sobre muestras de cristales de hielo para enriquecer aún más la textura del chirrido mecánico.
 
 ---
 
-## 5. Puesta en Marcha
-
-### En GitHub Pages (Sin instalar nada en la máquina)
-1. Publica el repositorio en GitHub Pages desde **Settings → Pages → Source: GitHub Actions**.
-2. Abre la experiencia en el computador: `https://<tu-usuario>.github.io/sublima/exp.html`
-3. Abre el control en el teléfono: `https://<tu-usuario>.github.io/sublima/`
-4. Ingresa el código de sala que muestra la pantalla del computador y pulsa **Conectar**.
-
-### En Servidor Local (Node.js)
-```bash
-cd sublima
-npm install
-node server.js
-```
-Abre en el computador `https://localhost:8443/exp` y en el teléfono la IP indicada en la consola.
